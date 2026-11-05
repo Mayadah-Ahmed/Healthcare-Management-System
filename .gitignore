@@ -30,9 +30,11 @@
 *.exe
 *.out
 *.app
+*.pdb
 
 # IDE and generated files
 .vs/
 out/
 build/
 data/
+.vscode/

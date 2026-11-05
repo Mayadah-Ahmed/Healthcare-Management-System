@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-#define DOCTOR_FILE "data/Doctors.dat"
+#define DOCTOR_FILE "data/doctors.dat"
 
 struct header {
     int avail;

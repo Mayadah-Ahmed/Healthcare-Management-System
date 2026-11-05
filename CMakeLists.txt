@@ -5,16 +5,23 @@ project(HealthcareManagementSystem)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 add_executable(DoctorTest
     src/main.cpp
     src/doctor.cpp
+    src/PrimaryIndex.cpp
+    src/AppointmentsFile.cpp
 )
 
-target_include_directories(DoctorTest PRIVATE include)
+target_include_directories(DoctorTest PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+)
 
 set_property(TARGET DoctorTest PROPERTY
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
+
+file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/data")
 
 file(COPY "${CMAKE_SOURCE_DIR}/data"
      DESTINATION "${CMAKE_BINARY_DIR}")

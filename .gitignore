@@ -31,5 +31,8 @@
 *.out
 *.app
 
+# IDE and generated files
 .vs/
 out/
+build/
+data/

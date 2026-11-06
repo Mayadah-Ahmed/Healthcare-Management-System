@@ -424,12 +424,13 @@ bool remove_doctor_speciality(const char* speciality, const char* doctor_Id){
   return true;
 }
 
+
 bool remove_appointment_doctor(const char* doctor_id, const char* appointment_id) {
     int pos = BinarySearchAppt(doctor_id);
     if (pos == -1) return false;
 
     fstream linked(APPT_DOCTOR_LINKED_FILE, ios::in | ios::out | ios::binary);
-    if (!linked.is_open()) return;
+    if (!linked.is_open()) return false;
 
     int current = apptDoctorIndex[pos].headRRN;
     int prev = -1;
@@ -476,9 +477,56 @@ void update_doctor_speciality(const char* oldSpec, const char* newSpec, const ch
   cout << "Speciality updated\n";
 }
 
-void update_appointment_doctor(const char* oldDoctorId, const char* newDoctorId, const char* appointment_id){
+void update_appointment(const char* oldDoctorId, const char* newDoctorId, const char* appointment_id){
   if(!remove_appointment_doctor(oldDoctorId, appointment_id)){ cout << "Update failed\n"; return; }
   insert_appointment(newDoctorId, appointment_id);
   cout << "Appointment doctor updated\n";
 }
 ////////////////////////  Display  ////////////////////////////////////////
+void displayDoctorNameIndex() {
+    cout << "\n--- Doctor Name Secondary Index ---\n";
+    ifstream f(NAME_LINKED_FILE, ios::binary);
+    for (int i = 0; i < nameIndexCount; i++) {
+        cout << nameIndex[i].doctor_name << " -> ";
+        int cur = nameIndex[i].headRRN;
+        SecondaryLinkedList n;
+        while (cur != -1) {
+            f.clear(); f.seekg((long)cur * sizeof(n)); f.read((char*)&n, sizeof(n));
+            cout << n.doctor_id << " -> ";
+            cur = n.nextRRN;
+        }
+        cout << "NULL\n";
+    }
+}
+
+void displayDoctorSpecialityIndex() {
+    cout << "\n--- Doctor Speciality Secondary Index ---\n";
+    ifstream f(SPECIALITY_LINKED_FILE, ios::binary);
+    for (int i = 0; i < specialityIndexCount; i++) {
+        cout << specialityIndex[i].doctor_speciality << " -> ";
+        int cur = specialityIndex[i].headRRN;
+        SpecialityLinkedList n;
+        while (cur != -1) {
+            f.clear(); f.seekg((long)cur * sizeof(n)); f.read((char*)&n, sizeof(n));
+            cout << n.doctor_id << " -> ";
+            cur = n.nextRRN;
+        }
+        cout << "NULL\n";
+    }
+}
+
+void displayApptDoctorIndex() {
+    cout << "\n--- Appointment/Doctor Secondary Index ---\n";
+    ifstream f(APPT_DOCTOR_LINKED_FILE, ios::binary);
+    for (int i = 0; i < apptDoctorIndexCount; i++) {
+        cout << apptDoctorIndex[i].doctor_id << " -> ";
+        int cur = apptDoctorIndex[i].headRRN;
+        ApptDoctorLinkedList n;
+        while (cur != -1) {
+            f.clear(); f.seekg((long)cur * sizeof(n)); f.read((char*)&n, sizeof(n));
+            cout << n.appointment_id << " -> ";
+            cur = n.nextRRN;
+        }
+        cout << "NULL\n";
+    }
+}

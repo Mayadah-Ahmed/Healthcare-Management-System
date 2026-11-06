@@ -2,6 +2,7 @@
 #define SECONDARYINDEX_H
 #include "PrimaryIndex.h"
 #include "doctor.h"
+#include "AppointmentsFile.h"
 
 struct SecondaryIndexEntry{
     char doctor_name[30];
@@ -57,7 +58,7 @@ void find_appointments_by_doctor(const char* doctor_id);
 
 void update_doctor_name(const char* oldName, const char* newName, const char* doctor_Id);
 void update_doctor_speciality(const char* oldSpec, const char* newSpec, const char* doctor_Id);
-void update_appointment(const char* oldAppt, const char * newAppt, const char* appointment_Id);
+void update_appointment(const char* oldDoctorId, const char * newDoctorId, const char* appointment_Id);
 
 void displayDoctorNameIndex();
 void displayDoctorSpecialityIndex();

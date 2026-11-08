@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(DoctorTest
     src/main.cpp
     src/doctor.cpp
+    src/PrimaryIndex.cpp
+    src/SecondaryIndex.cpp
+    src/AppointmentsFile.cpp
 )
 
 target_include_directories(DoctorTest PRIVATE include)

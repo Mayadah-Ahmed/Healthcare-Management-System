@@ -1,13 +1,12 @@
-
 #ifndef DOCTOR_H
 #define DOCTOR_H
 
 #include <iostream>
 using namespace std;
 
-#define DOCTOR_FILE "data/Doctors.dat"
+#define DOCTOR_FILE "data/doctors.dat"
 
-struct header {
+struct Doctor_header {
     int avail;
 };
 
@@ -16,27 +15,21 @@ struct Doctor {
     char doctor_name[30];
     char doctor_speciality[20];
     char address[30];
-    int next;
+
 };
 
+static_assert(sizeof(Doctor) == 95, "Doctor size is not 95 bytes");
 
 void initializedoctor_flie();
-
-
 bool is_doctor_id_exists(const char* doctor_id);
-
-
 void Add_doctor(Doctor d);
-
+void delete_doctor_by_id(const char* doctor_id);
 void search_doctor_by_id(const char* doctor_id);
 void search_doctor_by_name(const char* doctor_name);
 void search_doctor_by_speciality(const char* doctor_speciality);
-
-
-void update_doctor_by_id(const char* doctor_id, Doctor updated_doctor);
-
-void delete_docotor_by_id(const char* doctor_id);
-
+void update_doctor_by_name(const char* doctor_id, const char* updated_doctor_name);
+void update_doctor_by_speciality(const char* doctor_id, const char* updated_doctor_speciality);
+void update_doctor_by_id(const char* doctor_id, const char* updated_doctor_id);
 void display_all_doctors();
 
 #endif

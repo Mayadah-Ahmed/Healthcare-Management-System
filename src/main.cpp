@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "doctor.h"
+#include "AppointmentsFile.h"
 #include "PrimaryIndex.h"
 #include "SecondaryIndex.h"
 
@@ -28,6 +29,7 @@ int main()
     cout << "\n===== INITIALIZE FILES =====\n";
 
     initializedoctor_flie();
+    initialize_appointment_file();
 
     // =====================================
     // 2. Build Indexes
@@ -38,6 +40,10 @@ int main()
     buildDoctorPrimaryIndex();
     buildDoctorNameIndex();
     buildDoctorSpeciality();
+
+    buildAppointmentPrimaryIndex();
+    buildDoctorAppointment();
+
 
     // =====================================
     // 3. Add Doctors
@@ -171,6 +177,53 @@ int main()
 
     display_all_indexes();
 
+
+    //=====================================
+    //===== appointment tests==============
+    //=====================================
+
+    cout << "\n===== APPOINTMENTS: ADD =====\n";
+
+    Add_appointment({ "A001", "2026-11-20 10:00", "D001" });
+    Add_appointment({ "A002", "2026-11-20 11:00", "D001" });
+    Add_appointment({ "A003", "2026-11-21 09:00", "D002" });
+    Add_appointment({ "A004", "2026-11-21 10:30", "D002" });
+    Add_appointment({ "A005", "2026-11-22 12:00", "D003" });
+    Add_appointment({ "A006", "2026-11-22 13:00", "D003" });
+    Add_appointment({ "A007", "2026-11-23 09:30", "D004" });
+    Add_appointment({ "A008", "2026-11-23 11:15", "D004" });
+    Add_appointment({ "A009", "2026-11-24 10:00", "D005" });
+    Add_appointment({ "A010", "2026-11-24 14:00", "D005" });
+    Add_appointment({ "A010", "2026-11-24 14:00", "D005" });
+
+    cout << "\n===== APPOINTMENTS: DISPLAY ALL =====\n";
+    display_all_appointments();
+
+
+    cout << "\n===== SEARCH A002, THEN UPDATE ITS DATE =====\n";
+    search_appointment_by_id("A002");
+    update_appointment_date("A002", "2027-01-01");
+    search_appointment_by_id("A002");
+
+
+
+    cout << "\n===== D002 APPOINTMENTS =====\n";
+    find_appointments_by_doctor("D002");
+
+
+    cout << "\n===== DELETE A003 =====\n";
+    delete_appointment_by_id("A003");
+    search_appointment_by_id("A003");
+    find_appointments_by_doctor("D002");
+
+
+    cout << "\n===== ADD A011\n";
+    cout << "A011 written at RRN = " << Add_appointment({ "A011", "2026-11-25 10:00", "D002" }) << endl;
+    display_all_appointments();
+
+
+    cout << "\n===== DELETE A MISSING ID =====\n";
+    delete_appointment_by_id("A999");
 
 
     return 0;

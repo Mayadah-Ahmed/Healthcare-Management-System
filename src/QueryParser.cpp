@@ -59,7 +59,7 @@ vector<string> tokenize(string query)
             tokens.push_back(op);
 		}
         // if we are outside quotes and encounter a space, we push the current token to the tokens vector and clear it for the next token
-        else if (c == ' ' && !insideQuotes)
+        else if (isspace((unsigned char)c) && !insideQuotes)
         {
             if (!token.empty())
             {
@@ -83,6 +83,11 @@ vector<string> tokenize(string query)
         }
     }
 
+    // Check if quotes are closed
+    if (insideQuotes)
+    {
+        return {};
+    }
     if (!token.empty())
     {
         tokens.push_back(token);

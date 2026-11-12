@@ -15,8 +15,7 @@ using namespace std;
 
 
 // Get Matching IDs
-vector<string> getMatchingIDs(const Condition& condition,
-    const string& tableName)
+vector<string> getMatchingIDs(const Condition& condition,const string& tableName)
 {
     vector<string> result;
 
@@ -55,7 +54,39 @@ vector<string> getMatchingIDs(const Condition& condition,
             if (rrn != -1)
                 result.push_back(condition.value);
         }
+        else if (condition.field == "Appointment Date")
+        {
+            ifstream file(APPOINTMENT_FILE, ios::binary);
+
+            if (!file.is_open())
+                return result;
+
+            appointment_header h;
+            file.read((char*)&h, sizeof(h));
+
+            if (!file)
+            {
+                file.close();
+                return result;
+            }
+
+            Appointment a;
+
+            while (file.read((char*)&a, sizeof(Appointment)))
+            {
+                if (a.appointment_id[0] == '*')
+                    continue;
+
+                if (strcmp(a.appointment_date, condition.value.c_str()) == 0)
+                {
+                    result.push_back(a.appointment_id);
+                }
+            }
+
+            file.close();
+        }
     }
+
 
     return result;
 }
@@ -212,16 +243,102 @@ void executeQuery(const Query& query)
     {
         if (query.tableName == "Doctors")
         {
+            ifstream file(DOCTOR_FILE, ios::binary);
+
+            if (!file.is_open()) {
+                cout << "Cannot open doctors file." << endl;
+                return;
+            }
+
+            Doctor_header h;
+            file.read((char*)&h, sizeof(h));
+
+            if (!file) {
+                cout << "Error reading doctors header." << endl;
+                file.close();
+                return;
+            }
+
             cout << "\n========== DOCTORS TABLE ==========\n";
-            display_all_doctors();
+
+            if (query.selectedField == "*" ||
+                query.selectedField == "ALL" ||
+                query.selectedField == "all") {
+                cout << left
+                    << setw(15) << "Doctor ID"
+                    << setw(30) << "Doctor Name"
+                    << setw(22) << "Specialty"
+                    << setw(30) << "Address" << endl;
+                cout << string(97, '-') << endl;
+            }
+            else {
+                cout << query.selectedField << endl;
+                cout << string(30, '-') << endl;
+            }
+
+            Doctor d;
+            int count = 0;
+
+            while (file.read((char*)&d, sizeof(Doctor))) {
+                if (d.doctor_id[0] == '*')
+                    continue;
+
+                displayDoctor(d, query.selectedField);
+                count++;
+            }
+
+            cout << "\n" << count << " record(s) found.\n";
+            file.close();
         }
         else if (query.tableName == "Appointments")
         {
+            ifstream file(APPOINTMENT_FILE, ios::binary);
+
+            if (!file.is_open()) {
+                cout << "Cannot open appointments file." << endl;
+                return;
+            }
+
+            appointment_header h;
+            file.read((char*)&h, sizeof(h));
+
+            if (!file) {
+                cout << "Error reading appointments header." << endl;
+                file.close();
+                return;
+            }
+
             cout << "\n======= APPOINTMENTS TABLE =======\n";
-            display_all_appointments();
+
+            if (query.selectedField == "*" ||
+                query.selectedField == "ALL" ||
+                query.selectedField == "all") {
+                cout << left
+                    << setw(18) << "Appointment ID"
+                    << setw(32) << "Appointment Date"
+                    << setw(15) << "Doctor ID" << endl;
+                cout << string(65, '-') << endl;
+            }
+            else {
+                cout << query.selectedField << endl;
+                cout << string(32, '-') << endl;
+            }
+
+            Appointment a;
+            int count = 0;
+
+            while (file.read((char*)&a, sizeof(Appointment))) {
+                if (a.appointment_id[0] == '*')
+                    continue;
+
+                displayAppointment(a, query.selectedField);
+                count++;
+            }
+
+            cout << "\n" << count << " record(s) found.\n";
+            file.close();
         }
-        else
-        {
+        else {
             cout << "Invalid table name." << endl;
         }
 
@@ -264,7 +381,7 @@ void executeQuery(const Query& query)
     {
         cout << "\n================ QUERY RESULT ================\n";
 
-        if (query.selectedField == "*" || query.selectedField == "ALL")
+        if (query.selectedField == "*" || query.selectedField == "ALL" || query.selectedField == "all")
         {
             cout << left
                 << setw(15) << "Doctor ID"
@@ -302,7 +419,7 @@ void executeQuery(const Query& query)
     {
         cout << "\n================ QUERY RESULT ================\n";
 
-        if (query.selectedField == "*" || query.selectedField == "ALL")
+        if (query.selectedField == "*" || query.selectedField == "ALL" || query.selectedField == "all")
         {
             cout << left
                 << setw(18) << "Appointment ID"

@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.20)
 
 project(HealthcareManagementSystem)
@@ -10,8 +11,10 @@ add_executable(DoctorTest
     src/doctor.cpp
     src/PrimaryIndex.cpp
     src/SecondaryIndex.cpp
-    src/AppointmentsFile.cpp
-)
+ "src/QueryEngine.cpp"    src/AppointmentsFile.cpp
+    src/QueryParser.cpp
+    src/QueryEngine.cpp
+ "include/QueryEngine.h")
 
 target_include_directories(DoctorTest PRIVATE include)
 

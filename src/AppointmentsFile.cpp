@@ -51,6 +51,11 @@ int Add_appointment(Appointment a) {
 		return -1;
 	}
 
+	if (binarySearchDoctor(a.doctor_id) == -1) {
+		cout << "Doctor with ID " << a.doctor_id << " does not exist." << endl;
+		return -1;
+	}
+
 	if (is_appointment_id_exists(a.appointment_id)) {
 		cout << "Appointment with ID " << a.appointment_id << " already exists." << endl;
 		return -1;
@@ -73,18 +78,25 @@ int Add_appointment(Appointment a) {
 	}
 	else {
 
-		rrn = h.avail;
+		int offset = h.avail;
+		rrn = (offset- (int)sizeof(appointment_header)) / (int)sizeof(Appointment);
 
 		int next;
-		appointment_file.seekg(sizeof(appointment_header) + rrn * sizeof(Appointment) + 1);
+		appointment_file.seekg(offset+ 1);
 		appointment_file.read((char*)&next, sizeof(int));
 		h.avail = next;
 
 		appointment_file.seekp(0);
 		appointment_file.write((char*)&h, sizeof(h));
 
-		appointment_file.seekp(sizeof(appointment_header) + rrn * sizeof(Appointment));
+		appointment_file.seekp(offset);
 		appointment_file.write((char*)&a, sizeof(Appointment));
+	}
+
+	if (!appointment_file.good()) {
+		cout << "Error: failed to add appointment." << endl;
+		appointment_file.close();
+		return -1;
 	}
 
 	appointment_file.close();
@@ -102,8 +114,8 @@ int Add_appointment(Appointment a) {
 
 
 bool update_appointment_date(const char* appointment_id, const char* new_date) {
-	if (strlen(new_date) > 30) {
-		cout << "Date is longer than 30 characters" << endl;
+	if (strlen(new_date) >= 30) {
+		cout << "Date must be at most 29 characters" << endl;
 		return false;
 	}
 
@@ -117,6 +129,7 @@ bool update_appointment_date(const char* appointment_id, const char* new_date) {
 	fstream appointment_file(APPOINTMENT_FILE, ios::in | ios::out | ios::binary);
 
 	char date[30];
+	memset(date, 0, sizeof(date));
 	strncpy(date, new_date, sizeof(date));
 
 	appointment_file.seekp(sizeof(appointment_header) + rrn * sizeof(Appointment) + sizeof(Appointment::appointment_id));
@@ -178,16 +191,24 @@ int delete_appointment_by_id(const char* appointment_id) {
 	appointment_file.seekg(0);
 	appointment_file.read((char*)&h, sizeof(h));
 
+	int offset = sizeof(appointment_header) + rrn * sizeof(Appointment);
 	int old_head = h.avail;
-	h.avail = rrn;
+	h.avail = offset;
 
 	appointment_file.seekp(0);
 	appointment_file.write((char*)&h, sizeof(h));
 
 	char marker = '*';
-	appointment_file.seekp(sizeof(appointment_header) + rrn * sizeof(Appointment));
+	appointment_file.seekp(offset);
 	appointment_file.write(&marker, 1);
 	appointment_file.write((char*)&old_head, sizeof(int));
+
+	if (!appointment_file.good()) {
+		cout << "Error: failed to delete appointment." << endl;
+		appointment_file.close();
+		return -1;
+	}
+
 	appointment_file.close();
 
 	//remove the appointment from primary index

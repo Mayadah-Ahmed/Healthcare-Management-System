@@ -213,7 +213,7 @@ void displayDoctor(const Doctor& d, const string& selectedField)
 // Display Appointment
 void displayAppointment(const Appointment& a, const string& selectedField)
 {
-    if (selectedField == "*" || selectedField == "ALL")
+    if (selectedField == "*" || selectedField == "ALL" || selectedField == "all")
     {
         cout << left
             << setw(18) << a.appointment_id

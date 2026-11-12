@@ -3,6 +3,8 @@
 #include "PrimaryIndex.h"
 #include "doctor.h"
 #include "AppointmentsFile.h"
+#include <vector>
+#include <string>
 
 struct SecondaryIndexEntry{
     char doctor_name[30];
@@ -64,6 +66,16 @@ void displayDoctorNameIndex();
 void displayDoctorSpecialityIndex();
 void displayApptDoctorIndex();
 
+// Functions used by Query Engine
+vector<string> getDoctorIDsByName(const char* name);
+
+vector<string> getDoctorIDsBySpeciality(
+    const char* speciality
+);
+
+vector<string> getAppointmentIDsByDoctor(
+    const char* doctor_id
+);
 
 #define NAME_INDEX_FILE  "data/name_index.dat"
 #define NAME_LINKED_FILE  "data/name_linked.dat"

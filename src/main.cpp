@@ -5,6 +5,8 @@
 #include "AppointmentsFile.h"
 #include "PrimaryIndex.h"
 #include "SecondaryIndex.h"
+#include "QueryParser.h"
+#include "QueryEngine.h"
 
 using namespace std;
 
@@ -177,7 +179,7 @@ int main()
 
             break;
         }
-
+        
         case 8:
         {
             char doctor_id[15];
@@ -204,7 +206,23 @@ int main()
 
         case 10:
         {
-            cout << "Query feature is not implemented yet.\n";
+            string input;
+            Query query;
+
+            cout << "Enter your SQL Query:\n";
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            getline(cin, input);
+
+            if (parseQuery(input, query))
+            {
+                executeQuery(query);
+            }
+            else
+            {
+                cout << "Invalid Query!\n";
+            }
 
             break;
         }

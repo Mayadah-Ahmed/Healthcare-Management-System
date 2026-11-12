@@ -535,3 +535,100 @@ void displayApptDoctorIndex() {
         cout << "NULL\n";
     }
 }
+// functions used by qeury engine
+
+vector<string> getDoctorIDsByName(const char* name)
+{
+    vector<string> result;
+
+    int pos = BinarySearchSec(name);
+
+    if (pos == -1)
+        return result;
+
+    ifstream file(NAME_LINKED_FILE, ios::binary);
+    if (!file.is_open())
+        return result;
+
+    int current = nameIndex[pos].headRRN;
+    SecondaryLinkedList node;
+
+    while (current != -1)
+    {
+        file.clear();
+        file.seekg((long)current * sizeof(SecondaryLinkedList));
+
+        if (!file.read((char*)&node, sizeof(node)))
+            break;
+
+        result.push_back(node.doctor_id);
+        current = node.nextRRN;
+    }
+
+    file.close();
+    return result;
+}
+
+
+vector<string> getDoctorIDsBySpeciality(const char* speciality)
+{
+    vector<string> result;
+
+    int pos = BinarySearchSpeciality(speciality);
+    if (pos == -1)
+        return result;
+
+    ifstream file(SPECIALITY_LINKED_FILE, ios::binary);
+    if (!file.is_open())
+        return result;
+
+    int current = specialityIndex[pos].headRRN;
+    SpecialityLinkedList node;
+
+    while (current != -1)
+    {
+        file.clear();
+        file.seekg((long)current * sizeof(SpecialityLinkedList));
+
+        if (!file.read((char*)&node, sizeof(node)))
+            break;
+
+        result.push_back(node.doctor_id);
+        current = node.nextRRN;
+    }
+
+    file.close();
+    return result;
+}
+
+
+vector<string> getAppointmentIDsByDoctor(const char* doctor_id)
+{
+    vector<string> result;
+
+    int pos = BinarySearchAppt(doctor_id);
+    if (pos == -1)
+        return result;
+
+    ifstream file(APPT_DOCTOR_LINKED_FILE, ios::binary);
+    if (!file.is_open())
+        return result;
+
+    int current = apptDoctorIndex[pos].headRRN;
+    ApptDoctorLinkedList node;
+
+    while (current != -1)
+    {
+        file.clear();
+        file.seekg((long)current * sizeof(ApptDoctorLinkedList));
+
+        if (!file.read((char*)&node, sizeof(node)))
+            break;
+
+        result.push_back(node.appointment_id);
+        current = node.nextRRN;
+    }
+
+    file.close();
+    return result;
+}

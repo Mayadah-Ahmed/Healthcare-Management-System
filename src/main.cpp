@@ -1,177 +1,433 @@
 
 #include <iostream>
+#include <limits>
+#include <filesystem>
 #include "doctor.h"
+#include "AppointmentsFile.h"
 #include "PrimaryIndex.h"
 #include "SecondaryIndex.h"
+#include "QueryParser.h"
+#include "QueryEngine.h"
 
 using namespace std;
 
-// Display all indexes
-void display_all_indexes()
+template <size_t N>
+void setField(char(&field)[N], const char* value)
 {
-    cout << "\n===== DISPLAY PRIMARY INDEX =====\n";
-    displayDoctorPrimaryIndex();
-
-    cout << "\n===== DISPLAY NAME SECONDARY INDEX =====\n";
-    displayDoctorNameIndex();
-
-    cout << "\n===== DISPLAY SPECIALITY SECONDARY INDEX =====\n";
-    displayDoctorSpecialityIndex();
+    strncpy(field, value, N - 1);
+    field[N - 1] = '\0';
 }
 
-int main()
+void initializeInitialData()
 {
+    cout << "\n===== CHECK INITIAL DATA =====\n";
+
+    // Check whether both files contain only their headers
+    bool doctorsEmpty =
+        filesystem::file_size(DOCTOR_FILE) == sizeof(Doctor_header);
+
+    bool appointmentsEmpty =
+        filesystem::file_size(APPOINTMENT_FILE) == sizeof(appointment_header);
+
+    // Do not insert initial data again
+    if (!doctorsEmpty || !appointmentsEmpty)
+    {
+        cout << "Initial data already exists. Skipping insertion.\n";
+        return;
+    }
+
+    cout << "Inserting initial Doctors and Appointments...\n";
+
     // =====================================
-    // 1. Initialize Files
+    //          INITIAL DOCTORS
     // =====================================
 
-    cout << "\n===== INITIALIZE FILES =====\n";
+    Doctor doctors[5]{};
 
-    initializedoctor_flie();
+    setField(doctors[0].doctor_id, "D001");
+    setField(doctors[0].doctor_name, "Ahmed Ali");
+    setField(doctors[0].doctor_speciality, "Cardiology");
+    setField(doctors[0].address, "Cairo");
+
+    setField(doctors[1].doctor_id, "D002");
+    setField(doctors[1].doctor_name, "Sara Mohamed");
+    setField(doctors[1].doctor_speciality, "Neurology");
+    setField(doctors[1].address, "Giza");
+
+    setField(doctors[2].doctor_id, "D003");
+    setField(doctors[2].doctor_name, "Omar Hassan");
+    setField(doctors[2].doctor_speciality, "Pediatrics");
+    setField(doctors[2].address, "Cairo");
+
+    setField(doctors[3].doctor_id, "D004");
+    setField(doctors[3].doctor_name, "Mona Adel");
+    setField(doctors[3].doctor_speciality, "Dermatology");
+    setField(doctors[3].address, "Alexandria");
+
+    setField(doctors[4].doctor_id, "D005");
+    setField(doctors[4].doctor_name, "Youssef Samir");
+    setField(doctors[4].doctor_speciality, "Surgery");
+    setField(doctors[4].address, "Giza");
+
+    for (int i = 0; i < 5; i++)
+    {
+        Add_doctor(doctors[i]);
+    }
+
+    cout << "5 Doctors inserted successfully.\n";
 
     // =====================================
-    // 2. Build Indexes
+    //        REBUILD DOCTOR INDEXES
     // =====================================
-
-    cout << "\n===== BUILD INDEXES =====\n";
 
     buildDoctorPrimaryIndex();
     buildDoctorNameIndex();
     buildDoctorSpeciality();
 
     // =====================================
-    // 3. Add Doctors
+    //        INITIAL APPOINTMENTS
     // =====================================
 
-    cout << "\n===== ADD DOCTORS =====\n";
+    Appointment appointments[10]{};
 
-    Doctor d1 = { "D001", "Ahmed", "Cardiology", "Cairo" };
-    Doctor d2 = { "D002", "Mona", "Neurology", "Giza" };
-    Doctor d3 = { "D003", "Omar", "Cardiology", "Alex" };
-    Doctor d4 = { "D004", "Sara", "Pediatrics", "Cairo" };
-    Doctor d5 = { "D005", "Ali", "Neurology", "Giza" };
+    setField(appointments[0].appointment_id, "A001");
+    setField(appointments[0].appointment_date, "2026-11-10");
+    setField(appointments[0].doctor_id, "D001");
 
-    Add_doctor(d1);
-    Add_doctor(d2);
-    Add_doctor(d3);
-    Add_doctor(d4);
-    Add_doctor(d5);
+    setField(appointments[1].appointment_id, "A002");
+    setField(appointments[1].appointment_date, "2026-11-11");
+    setField(appointments[1].doctor_id, "D002");
 
-    // =====================================
-    // 4. Display All Doctors
-    // =====================================
+    setField(appointments[2].appointment_id, "A003");
+    setField(appointments[2].appointment_date, "2026-11-12");
+    setField(appointments[2].doctor_id, "D001");
 
-    cout << "\n===== DISPLAY ALL DOCTORS =====\n";
+    setField(appointments[3].appointment_id, "A004");
+    setField(appointments[3].appointment_date, "2026-11-13");
+    setField(appointments[3].doctor_id, "D003");
 
-    display_all_doctors();
+    setField(appointments[4].appointment_id, "A005");
+    setField(appointments[4].appointment_date, "2026-11-14");
+    setField(appointments[4].doctor_id, "D004");
 
-    // Display all indexes after insertion
-    display_all_indexes();
+    setField(appointments[5].appointment_id, "A006");
+    setField(appointments[5].appointment_date, "2026-11-15");
+    setField(appointments[5].doctor_id, "D005");
 
-    // =====================================
-    // 5. Search By ID
-    // =====================================
+    setField(appointments[6].appointment_id, "A007");
+    setField(appointments[6].appointment_date, "2026-11-16");
+    setField(appointments[6].doctor_id, "D002");
 
-    cout << "\n===== SEARCH BY ID =====\n";
+    setField(appointments[7].appointment_id, "A008");
+    setField(appointments[7].appointment_date, "2026-11-17");
+    setField(appointments[7].doctor_id, "D003");
 
-    search_doctor_by_id("D001");
+    setField(appointments[8].appointment_id, "A009");
+    setField(appointments[8].appointment_date, "2026-11-18");
+    setField(appointments[8].doctor_id, "D001");
 
-    // =====================================
-    // 6. Search By Name
-    // =====================================
+    setField(appointments[9].appointment_id, "A010");
+    setField(appointments[9].appointment_date, "2026-11-19");
+    setField(appointments[9].doctor_id, "D005");
 
-    cout << "\n===== SEARCH BY NAME =====\n";
+    for (int i = 0; i < 10; i++)
+    {
+        Add_appointment(appointments[i]);
+    }
 
-    search_doctor_by_name("Ahmed");
-
-    // =====================================
-    // 7. Search By Speciality
-    // =====================================
-
-    cout << "\n===== SEARCH BY SPECIALITY =====\n";
-
-    search_doctor_by_speciality("Cardiology");
-
-    // =====================================
-    // 8. Update Doctor ID
-    // =====================================
-
-    cout << "\n===== UPDATE DOCTOR ID =====\n";
-
-    update_doctor_by_id("D001", "D010");
-
-    search_doctor_by_id("D010");
-
-    display_all_indexes();
+    cout << "10 Appointments inserted successfully.\n";
 
     // =====================================
-    // 9. Update Doctor Name
+    //          REBUILD ALL INDEXES
     // =====================================
 
-    cout << "\n===== UPDATE DOCTOR NAME =====\n";
+    buildDoctorPrimaryIndex();
+    buildDoctorNameIndex();
+    buildDoctorSpeciality();
 
-    update_doctor_by_name("D010", "Mohamed");
+    buildAppointmentPrimaryIndex();
+    buildDoctorAppointment();
 
-    cout << "\nSearch by old name:\n";
-    search_doctor_by_name("Ahmed");
+    cout << "\nInitial data and indexes created successfully!\n";
+}
 
-    cout << "\nSearch by new name:\n";
-    search_doctor_by_name("Mohamed");
+int main()
+{
+    cout << "\n===== INITIALIZE FILES =====\n";
 
-    display_all_indexes();
+    initializedoctor_flie();
+    initialize_appointment_file();
 
-    // =====================================
-    // 10. Update Doctor Speciality
-    // =====================================
+    cout << "\n===== BUILD INITIAL DATA =====\n";
 
-    cout << "\n===== UPDATE DOCTOR SPECIALITY =====\n";
+    initializeInitialData();
 
-    update_doctor_by_speciality("D010", "Surgery");
+    // Build all indexes once after checking/inserting initial data
+    buildDoctorPrimaryIndex();
+    buildDoctorNameIndex();
+    buildDoctorSpeciality();
 
-    cout << "\nSearch by old speciality:\n";
-    search_doctor_by_speciality("Cardiology");
+    buildAppointmentPrimaryIndex();
+    buildDoctorAppointment();
+    int choice;
 
-    cout << "\nSearch by new speciality:\n";
-    search_doctor_by_speciality("Surgery");
+    while (true)
+    {
+        cout << "\n========== HEALTHCARE MANAGEMENT SYSTEM ==========\n";
+        cout << "1.  Add Doctor\n";
+        cout << "2.  Add Appointment\n";
+        cout << "3.  Update Doctor Name\n";
+        cout << "4.  Update Doctor ID\n";
+        cout << "5.  Update Appointment Date\n";
+        cout << "6.  Delete Appointment\n";
+        cout << "7.  Delete Doctor\n";
+        cout << "8.  Print Doctor Info\n";
+        cout << "9.  Print Appointment Info\n";
+        cout << "10. Write Query\n";
+        cout << "11. Display All Doctors\n";
+        cout << "12. Display All Appointments\n";
+        cout << "13. DisplayDoctorPrimaryIndex\n";
+        cout << "14. DisplayAppointmentPrimaryIndex\n";
+        cout << "15. DisplayDoctorSecondaryIndex\n";
+        cout << "16. DisplayAppointmentSecondaryIndex\n";
+        cout << "17. Exit\n";
 
-    display_all_indexes();
+        cout << "\nEnter your choice: ";
+        cin >> choice;
 
-    // =====================================
-    // 11. Delete Doctor
-    // =====================================
+        switch (choice)
+        {
+        case 1:
+        {
+            Doctor d;
+            memset(&d, 0, sizeof(d));
 
-    cout << "\n===== DELETE DOCTOR =====\n";
+            cout << "Enter Doctor ID: ";
+            cin >> d.doctor_id;
 
-    delete_doctor_by_id("D010");
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    display_all_indexes();
+            cout << "Enter Doctor Name: ";
+            cin.getline(d.doctor_name, 30);
 
-    // =====================================
-    // 12. Test After Delete
-    // =====================================
+            cout << "Enter Doctor Specialty: ";
+            cin.getline(d.doctor_speciality, 20);
 
-    cout << "\n===== TEST AFTER DELETE =====\n";
+            cout << "Enter Doctor Address: ";
+            cin.getline(d.address, 30);
 
-    cout << "\nSearch by deleted ID:\n";
-    search_doctor_by_id("D010");
+            Add_doctor(d);
 
-    cout << "\nSearch by deleted name:\n";
-    search_doctor_by_name("Mohamed");
+            break;
+        }
 
-    cout << "\nSearch by deleted speciality:\n";
-    search_doctor_by_speciality("Surgery");
+        case 2:
+        {
+            Appointment a;
+            memset(&a, 0, sizeof(a));
 
-    // =====================================
-    // 13. Final Display
-    // =====================================
+            cout << "Enter Appointment ID: ";
+            cin >> a.appointment_id;
 
-    cout << "\n===== FINAL DOCTORS =====\n";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    display_all_doctors();
+            cout << "Enter Appointment Date: ";
+            cin.getline(a.appointment_date, 30);
 
-    display_all_indexes();
+            cout << "Enter Doctor ID: ";
+            cin >> a.doctor_id;
 
+            Add_appointment(a);
 
+            break;
+        }
+
+        case 3:
+        {
+            char doctor_id[15];
+            char new_name[30];
+
+            cout << "Enter Doctor ID: ";
+            cin >> doctor_id;
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            cout << "Enter New Doctor Name: ";
+            cin.getline(new_name, 30);
+
+            update_doctor_by_name(doctor_id, new_name);
+
+            break;
+        }
+
+        case 4:
+        {
+            char old_id[15];
+            char new_id[15];
+
+            cout << "Enter Current Doctor ID: ";
+            cin >> old_id;
+
+            cout << "Enter New Doctor ID: ";
+            cin >> new_id;
+
+            update_doctor_by_id(old_id, new_id);
+
+            break;
+        }
+
+        case 5:
+        {
+            char appointment_id[15];
+            char new_date[30];
+
+            cout << "Enter Appointment ID: ";
+            cin >> appointment_id;
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            cout << "Enter New Appointment Date: ";
+            cin.getline(new_date, 30);
+
+            update_appointment_date(appointment_id, new_date);
+
+            break;
+        }
+
+        case 6:
+        {
+            char appointment_id[15];
+
+            cout << "Enter Appointment ID to Delete: ";
+            cin >> appointment_id;
+
+            delete_appointment_by_id(appointment_id);
+
+            break;
+        }
+
+        case 7:
+        {
+            char doctor_id[15];
+
+            cout << "Enter Doctor ID to Delete: ";
+            cin >> doctor_id;
+
+            delete_doctor_by_id(doctor_id);
+
+            break;
+        }
+
+        case 8:
+        {
+            char doctor_id[15];
+
+            cout << "Enter Doctor ID: ";
+            cin >> doctor_id;
+
+            search_doctor_by_id(doctor_id);
+
+            break;
+        }
+
+        case 9:
+        {
+            char appointment_id[15];
+
+            cout << "Enter Appointment ID: ";
+            cin >> appointment_id;
+
+            search_appointment_by_id(appointment_id);
+
+            break;
+        }
+
+        case 10:
+        {
+            string input;
+            Query query;
+
+            cout << "Enter your SQL Query:\n";
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            getline(cin, input);
+
+            if (parseQuery(input, query))
+            {
+                executeQuery(query);
+            }
+            else
+            {
+                cout << "Invalid Query!\n";
+            }
+
+            break;
+        }
+        case 11:
+        {
+            display_all_doctors();
+            break;
+        }
+        case 12:
+        {
+            display_all_appointments();
+            break;
+        }
+        case 13:
+        {
+            displayDoctorPrimaryIndex();
+            break;
+        }
+
+        case 14:
+        {
+            displayAppointmentPrimaryIndex();
+            break;
+        }
+
+        case 15:
+        {
+            cout << "You Want to Display Doctor Index with Name [1] or Specialty [2]: ";
+
+            int c;
+            cin >> c;
+
+            if (c == 1)
+                displayDoctorNameIndex();
+            else if (c == 2)
+                displayDoctorSpecialityIndex();
+            else
+                cout << "Invalid choice";
+
+            break;
+        }
+
+        case 16:
+        {
+            displayApptDoctorIndex();
+            break;
+        }
+
+        case 17:
+        {
+            cout << "Exiting Healthcare Management System...\n";
+            return 0;
+        }
+        default:
+        {
+            cout << "Invalid choice! Please try again.\n";
+        }
+        }
+    }
 
     return 0;
 }
+
+//=====Qureries========
+//select all from doctors where doctor name ='Youssef Samir' and doctor specialty='Surgery'
+//select doctor name from doctors where doctor name ='Mona Adel'
+//select all from doctors where doctor id='D001'
+//Select all from Appointments where Doctor ID='D001'
+//select all from doctors where doctor specialty='Surgery'
+//select all from doctors where doctor name ='Youssef Samir' or doctor specialty='Pediatrics'

@@ -17,137 +17,124 @@ void setField(char(&field)[N], const char* value)
     field[N - 1] = '\0';
 }
 
-
 void initializeInitialData()
 {
     cout << "\n===== CHECK INITIAL DATA =====\n";
 
+    // Check whether both files contain only their headers
     bool doctorsEmpty =
         filesystem::file_size(DOCTOR_FILE) == sizeof(Doctor_header);
 
     bool appointmentsEmpty =
         filesystem::file_size(APPOINTMENT_FILE) == sizeof(appointment_header);
 
+    // Do not insert initial data again
+    if (!doctorsEmpty || !appointmentsEmpty)
+    {
+        cout << "Initial data already exists. Skipping insertion.\n";
+        return;
+    }
+
+    cout << "Inserting initial Doctors and Appointments...\n";
 
     // =====================================
     //          INITIAL DOCTORS
     // =====================================
 
-    if (doctorsEmpty)
+    Doctor doctors[5]{};
+
+    setField(doctors[0].doctor_id, "D001");
+    setField(doctors[0].doctor_name, "Ahmed Ali");
+    setField(doctors[0].doctor_speciality, "Cardiology");
+    setField(doctors[0].address, "Cairo");
+
+    setField(doctors[1].doctor_id, "D002");
+    setField(doctors[1].doctor_name, "Sara Mohamed");
+    setField(doctors[1].doctor_speciality, "Neurology");
+    setField(doctors[1].address, "Giza");
+
+    setField(doctors[2].doctor_id, "D003");
+    setField(doctors[2].doctor_name, "Omar Hassan");
+    setField(doctors[2].doctor_speciality, "Pediatrics");
+    setField(doctors[2].address, "Cairo");
+
+    setField(doctors[3].doctor_id, "D004");
+    setField(doctors[3].doctor_name, "Mona Adel");
+    setField(doctors[3].doctor_speciality, "Dermatology");
+    setField(doctors[3].address, "Alexandria");
+
+    setField(doctors[4].doctor_id, "D005");
+    setField(doctors[4].doctor_name, "Youssef Samir");
+    setField(doctors[4].doctor_speciality, "Surgery");
+    setField(doctors[4].address, "Giza");
+
+    for (int i = 0; i < 5; i++)
     {
-        cout << "Inserting initial Doctors...\n";
-
-        Doctor doctors[5]{};
-
-        setField(doctors[0].doctor_id, "D001");
-        setField(doctors[0].doctor_name, "Ahmed Ali");
-        setField(doctors[0].doctor_speciality, "Cardiology");
-        setField(doctors[0].address, "Cairo");
-
-        setField(doctors[1].doctor_id, "D002");
-        setField(doctors[1].doctor_name, "Sara Mohamed");
-        setField(doctors[1].doctor_speciality, "Neurology");
-        setField(doctors[1].address, "Giza");
-
-        setField(doctors[2].doctor_id, "D003");
-        setField(doctors[2].doctor_name, "Omar Hassan");
-        setField(doctors[2].doctor_speciality, "Pediatrics");
-        setField(doctors[2].address, "Cairo");
-
-        setField(doctors[3].doctor_id, "D004");
-        setField(doctors[3].doctor_name, "Mona Adel");
-        setField(doctors[3].doctor_speciality, "Dermatology");
-        setField(doctors[3].address, "Alexandria");
-
-        setField(doctors[4].doctor_id, "D005");
-        setField(doctors[4].doctor_name, "Youssef Samir");
-        setField(doctors[4].doctor_speciality, "Surgery");
-        setField(doctors[4].address, "Giza");
-
-        for (int i = 0; i < 5; i++)
-        {
-            Add_doctor(doctors[i]);
-        }
-
-        cout << "5 Doctors inserted successfully.\n";
-    }
-    else
-    {
-        cout << "Doctors already exist. Skipping insertion.\n";
+        Add_doctor(doctors[i]);
     }
 
+    cout << "5 Doctors inserted successfully.\n";
 
     // =====================================
-    //        BUILD DOCTOR INDEXES
+    //        REBUILD DOCTOR INDEXES
     // =====================================
 
     buildDoctorPrimaryIndex();
     buildDoctorNameIndex();
     buildDoctorSpeciality();
 
-
     // =====================================
     //        INITIAL APPOINTMENTS
     // =====================================
 
-    if (appointmentsEmpty)
+    Appointment appointments[10]{};
+
+    setField(appointments[0].appointment_id, "A001");
+    setField(appointments[0].appointment_date, "2026-11-10");
+    setField(appointments[0].doctor_id, "D001");
+
+    setField(appointments[1].appointment_id, "A002");
+    setField(appointments[1].appointment_date, "2026-11-11");
+    setField(appointments[1].doctor_id, "D002");
+
+    setField(appointments[2].appointment_id, "A003");
+    setField(appointments[2].appointment_date, "2026-11-12");
+    setField(appointments[2].doctor_id, "D001");
+
+    setField(appointments[3].appointment_id, "A004");
+    setField(appointments[3].appointment_date, "2026-11-13");
+    setField(appointments[3].doctor_id, "D003");
+
+    setField(appointments[4].appointment_id, "A005");
+    setField(appointments[4].appointment_date, "2026-11-14");
+    setField(appointments[4].doctor_id, "D004");
+
+    setField(appointments[5].appointment_id, "A006");
+    setField(appointments[5].appointment_date, "2026-11-15");
+    setField(appointments[5].doctor_id, "D005");
+
+    setField(appointments[6].appointment_id, "A007");
+    setField(appointments[6].appointment_date, "2026-11-16");
+    setField(appointments[6].doctor_id, "D002");
+
+    setField(appointments[7].appointment_id, "A008");
+    setField(appointments[7].appointment_date, "2026-11-17");
+    setField(appointments[7].doctor_id, "D003");
+
+    setField(appointments[8].appointment_id, "A009");
+    setField(appointments[8].appointment_date, "2026-11-18");
+    setField(appointments[8].doctor_id, "D001");
+
+    setField(appointments[9].appointment_id, "A010");
+    setField(appointments[9].appointment_date, "2026-11-19");
+    setField(appointments[9].doctor_id, "D005");
+
+    for (int i = 0; i < 10; i++)
     {
-        cout << "Inserting initial Appointments...\n";
-
-        Appointment appointments[10]{};
-
-        setField(appointments[0].appointment_id, "A001");
-        setField(appointments[0].appointment_date, "2026-11-10");
-        setField(appointments[0].doctor_id, "D001");
-
-        setField(appointments[1].appointment_id, "A002");
-        setField(appointments[1].appointment_date, "2026-11-11");
-        setField(appointments[1].doctor_id, "D002");
-
-        setField(appointments[2].appointment_id, "A003");
-        setField(appointments[2].appointment_date, "2026-11-12");
-        setField(appointments[2].doctor_id, "D001");
-
-        setField(appointments[3].appointment_id, "A004");
-        setField(appointments[3].appointment_date, "2026-11-13");
-        setField(appointments[3].doctor_id, "D003");
-
-        setField(appointments[4].appointment_id, "A005");
-        setField(appointments[4].appointment_date, "2026-11-14");
-        setField(appointments[4].doctor_id, "D004");
-
-        setField(appointments[5].appointment_id, "A006");
-        setField(appointments[5].appointment_date, "2026-11-15");
-        setField(appointments[5].doctor_id, "D005");
-
-        setField(appointments[6].appointment_id, "A007");
-        setField(appointments[6].appointment_date, "2026-11-16");
-        setField(appointments[6].doctor_id, "D002");
-
-        setField(appointments[7].appointment_id, "A008");
-        setField(appointments[7].appointment_date, "2026-11-17");
-        setField(appointments[7].doctor_id, "D003");
-
-        setField(appointments[8].appointment_id, "A009");
-        setField(appointments[8].appointment_date, "2026-11-18");
-        setField(appointments[8].doctor_id, "D001");
-
-        setField(appointments[9].appointment_id, "A010");
-        setField(appointments[9].appointment_date, "2026-11-19");
-        setField(appointments[9].doctor_id, "D005");
-
-        for (int i = 0; i < 10; i++)
-        {
-            Add_appointment(appointments[i]);
-        }
-
-        cout << "10 Appointments inserted successfully.\n";
-    }
-    else
-    {
-        cout << "Appointments already exist. Skipping insertion.\n";
+        Add_appointment(appointments[i]);
     }
 
+    cout << "10 Appointments inserted successfully.\n";
 
     // =====================================
     //          REBUILD ALL INDEXES
@@ -160,9 +147,8 @@ void initializeInitialData()
     buildAppointmentPrimaryIndex();
     buildDoctorAppointment();
 
-    cout << "\nInitial data and indexes checked successfully!\n";
+    cout << "\nInitial data and indexes created successfully!\n";
 }
-
 
 int main()
 {
@@ -175,7 +161,13 @@ int main()
 
     initializeInitialData();
 
- 
+    // Build all indexes once after checking/inserting initial data
+    buildDoctorPrimaryIndex();
+    buildDoctorNameIndex();
+    buildDoctorSpeciality();
+
+    buildAppointmentPrimaryIndex();
+    buildDoctorAppointment();
     int choice;
 
     while (true)
@@ -434,7 +426,6 @@ int main()
         default:
         {
             cout << "Invalid choice! Please try again.\n";
-
         }
         }
     }

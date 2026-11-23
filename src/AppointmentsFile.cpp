@@ -51,6 +51,14 @@ int Add_appointment(Appointment a) {
 		return -1;
 	}
 
+	if (strlen(a.appointment_id) >= 15 ||
+		strlen(a.appointment_date) >= 30 ||
+		strlen(a.doctor_id) >= 15) {
+
+		cout << "One or more fields exceed maximum length." << endl;
+		return -1;
+	}
+
 	if (is_appointment_id_exists(a.appointment_id)) {
 		cout << "Appointment with ID " << a.appointment_id << " already exists." << endl;
 		return -1;

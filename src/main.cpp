@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <limits>
 #include <filesystem>
@@ -193,7 +192,17 @@ int main()
         cout << "17. Exit\n";
 
         cout << "\nEnter your choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice))
+        {
+            cout << "Invalid input! Please enter a number.\n";
+
+            cin.clear();
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            continue;
+        }
 
         switch (choice)
         {

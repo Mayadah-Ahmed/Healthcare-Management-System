@@ -32,13 +32,13 @@ vector<string> tokenize(string query)
     for (int i = 0; i < query.length(); i++)
     {
         char c = query[i];
-		// Handle quoted strings 
+        // Handle quoted strings 
         if (c == '\'')
         {
             insideQuotes = !insideQuotes;
             continue;
         }
-        
+
         if (!insideQuotes && isOperator(c))
         {
             if (!token.empty())
@@ -55,9 +55,9 @@ vector<string> tokenize(string query)
                 op += query[i + 1];
                 i++;
             }
-			
+
             tokens.push_back(op);
-		}
+        }
         // if we are outside quotes and encounter a space, we push the current token to the tokens vector and clear it for the next token
         else if (isspace((unsigned char)c) && !insideQuotes)
         {
@@ -75,10 +75,10 @@ vector<string> tokenize(string query)
                 token.clear();
             }
         }
-        
+
         else
         {
-            
+
             token += c;
         }
     }
@@ -121,7 +121,7 @@ bool parseQuery(string query, Query& result)
         return false;
 
     // Selected Field: ALL, *, or Doctor Name
-  // Selected Field
+
     if (toLower(tokens[i]) == "all" || tokens[i] == "*")
     {
         result.selectedField = tokens[i];
@@ -158,7 +158,7 @@ bool parseQuery(string query, Query& result)
     {
         return false;
     }
-  
+
     // FROM
     if (i >= tokens.size() ||
         toLower(tokens[i]) != "from")
@@ -179,7 +179,7 @@ bool parseQuery(string query, Query& result)
 
     i++;
 
-   // Check selected field
+    // Check selected field
     if (result.tableName == "Appointments" &&
         (result.selectedField == "Doctor Name" ||
             result.selectedField == "Doctor Specialty"))
@@ -280,7 +280,7 @@ bool parseQuery(string query, Query& result)
 
         result.conditions.push_back(condition);
 
-       // AND / OR
+        // AND / OR
         if (i < tokens.size())
         {
             string logicalOp = toLower(tokens[i]);

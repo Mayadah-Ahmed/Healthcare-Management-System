@@ -62,11 +62,11 @@ void Add_doctor(Doctor d) {
 
     // Check if doctor already exists
     if (is_doctor_id_exists(d.doctor_id)) {
-        cout << "Doctor with ID " << d.doctor_id  << " already exists." << endl;
+        cout << "Doctor with ID " << d.doctor_id << " already exists." << endl;
         return;
     }
 
-    fstream doctor_file(DOCTOR_FILE,ios::in | ios::out | ios::binary);
+    fstream doctor_file(DOCTOR_FILE, ios::in | ios::out | ios::binary);
 
     if (!doctor_file.is_open()) {
         cout << "Cannot open doctors file." << endl;
@@ -155,6 +155,13 @@ void delete_doctor_by_id(const char* doctor_id) {
         return;
     }
 
+    int doctor_has_appointment = BinarySearchAppt(doctor_id);
+
+    if (doctor_has_appointment != -1) {
+        cout << "Cannot delete doctor has Appoinments";
+        return;
+    }
+
     fstream doctor_file(DOCTOR_FILE, ios::in | ios::out | ios::binary);
 
     if (!doctor_file.is_open()) {
@@ -170,17 +177,19 @@ void delete_doctor_by_id(const char* doctor_id) {
     doctor_file.seekg(recordOffset);
     doctor_file.read((char*)&d, sizeof(Doctor));
 
-    if (!doctor_file) {
-        cout << "Error reading doctor record." << endl;
-        doctor_file.close();
-        return;
-    }
 
     Doctor_header h;
 
     // Read header
     doctor_file.seekg(0);
     doctor_file.read((char*)&h, sizeof(h));
+
+    if (!doctor_file) {
+        cout << "Error reading doctor record." << endl;
+        doctor_file.close();
+        return;
+    }
+
 
     if (!doctor_file) {
         cout << "Error reading doctor header." << endl;
@@ -205,7 +214,7 @@ void delete_doctor_by_id(const char* doctor_id) {
     // Mark record as deleted
     char marker = '*';
 
-	// Write marker and next pointer
+    // Write marker and next pointer
     doctor_file.seekp(recordOffset);
     doctor_file.write(&marker, 1);
     doctor_file.write((char*)&old_head, sizeof(int));
@@ -254,6 +263,12 @@ void search_doctor_by_id(const char* doctor_id) {
     // Read the doctor's record from the data file.
     doctor_file.read((char*)&d, sizeof(Doctor));
 
+    if (!doctor_file) {
+        cout << "Error reading doctor record." << endl;
+        doctor_file.close();
+        return;
+    }
+
     cout << "Doctor ID: " << d.doctor_id << endl;
     cout << "Doctor Name: " << d.doctor_name << endl;
     cout << "Doctor Speciality: " << d.doctor_speciality << endl;
@@ -274,7 +289,7 @@ void search_doctor_by_speciality(const char* doctor_speciality)
 }
 
 
-void update_doctor_by_id(const char* doctor_id,const char* Udated_doctor_id)
+void update_doctor_by_id(const char* doctor_id, const char* Udated_doctor_id)
 {
     // Check if new ID is empty
     if (Udated_doctor_id[0] == '\0' ||
@@ -367,7 +382,7 @@ void update_doctor_by_id(const char* doctor_id,const char* Udated_doctor_id)
 void update_doctor_by_name(const char* doctor_id, const char* updated_doctor_name) {
 
     // Check name length
-    if (updated_doctor_name[0] == '\0' || updated_doctor_name[0] == '*'||strlen(updated_doctor_name) >= 30) {
+    if (updated_doctor_name[0] == '\0' || updated_doctor_name[0] == '*' || strlen(updated_doctor_name) >= 30) {
         cout << "Invalid doctor name." << endl;
         return;
     }
@@ -434,10 +449,10 @@ void update_doctor_by_name(const char* doctor_id, const char* updated_doctor_nam
     cout << "Doctor name updated successfully." << endl;
 }
 
-void update_doctor_by_speciality(const char* doctor_id,const char* updated_doctor_speciality) {
+void update_doctor_by_speciality(const char* doctor_id, const char* updated_doctor_speciality) {
 
     // Check speciality length
-    if (updated_doctor_speciality[0] == '\0' || updated_doctor_speciality[0] == '*'||strlen(updated_doctor_speciality) >= 20) {
+    if (updated_doctor_speciality[0] == '\0' || updated_doctor_speciality[0] == '*' || strlen(updated_doctor_speciality) >= 20) {
         cout << "Invalid doctor speciality." << endl;
         return;
     }
@@ -517,14 +532,16 @@ void display_all_doctors() {
 
     Doctor_header h;
 
+    
+
+    doctor_file.seekg(0);
+    doctor_file.read((char*)&h, sizeof(h));
+
     if (!doctor_file) {
         cout << "Error reading doctor header." << endl;
         doctor_file.close();
         return;
     }
-
-    doctor_file.seekg(0);
-    doctor_file.read((char*)&h, sizeof(h));
 
     Doctor d;
     int i = 0;

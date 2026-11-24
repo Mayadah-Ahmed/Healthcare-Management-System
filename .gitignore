@@ -33,3 +33,9 @@
 
 .vs/
 out/
+# Build files
+build/
+
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt

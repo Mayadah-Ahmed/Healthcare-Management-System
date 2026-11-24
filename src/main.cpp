@@ -11,7 +11,7 @@
 using namespace std;
 
 template <size_t N>
-void setField(char(&field)[N], const char* value)
+void setField(char (&field)[N], const char *value)
 {
     strncpy(field, value, N - 1);
     field[N - 1] = '\0';
@@ -28,114 +28,118 @@ void initializeInitialData()
     bool appointmentsEmpty =
         filesystem::file_size(APPOINTMENT_FILE) == sizeof(appointment_header);
 
-    // Do not insert initial data again
-    if (!doctorsEmpty || !appointmentsEmpty)
-    {
-        cout << "Initial data already exists. Skipping insertion.\n";
-        return;
-    }
+    // cout << "Inserting initial Doctors and Appointments...\n";
+    if (doctorsEmpty)
+        cout << "Doctors file is empty. Inserting initial doctors...\n";
+    else
+        cout << "Doctors already exist. Skipping doctors insertion.\n";
 
-    cout << "Inserting initial Doctors and Appointments...\n";
+    if (appointmentsEmpty)
+        cout << "Appointments file is empty. Inserting initial appointments...\n";
+    else
+        cout << "Appointments already exist. Skipping appointments insertion.\n";
 
     // =====================================
     //          INITIAL DOCTORS
     // =====================================
-
-    Doctor doctors[5]{};
-
-    setField(doctors[0].doctor_id, "D001");
-    setField(doctors[0].doctor_name, "Ahmed Ali");
-    setField(doctors[0].doctor_speciality, "Cardiology");
-    setField(doctors[0].address, "Cairo");
-
-    setField(doctors[1].doctor_id, "D002");
-    setField(doctors[1].doctor_name, "Sara Mohamed");
-    setField(doctors[1].doctor_speciality, "Neurology");
-    setField(doctors[1].address, "Giza");
-
-    setField(doctors[2].doctor_id, "D003");
-    setField(doctors[2].doctor_name, "Omar Hassan");
-    setField(doctors[2].doctor_speciality, "Pediatrics");
-    setField(doctors[2].address, "Cairo");
-
-    setField(doctors[3].doctor_id, "D004");
-    setField(doctors[3].doctor_name, "Mona Adel");
-    setField(doctors[3].doctor_speciality, "Dermatology");
-    setField(doctors[3].address, "Alexandria");
-
-    setField(doctors[4].doctor_id, "D005");
-    setField(doctors[4].doctor_name, "Youssef Samir");
-    setField(doctors[4].doctor_speciality, "Surgery");
-    setField(doctors[4].address, "Giza");
-
-    for (int i = 0; i < 5; i++)
+    if (doctorsEmpty)
     {
-        Add_doctor(doctors[i]);
+        Doctor doctors[5]{};
+
+        setField(doctors[0].doctor_id, "D001");
+        setField(doctors[0].doctor_name, "Ahmed Ali");
+        setField(doctors[0].doctor_speciality, "Cardiology");
+        setField(doctors[0].address, "Cairo");
+
+        setField(doctors[1].doctor_id, "D002");
+        setField(doctors[1].doctor_name, "Sara Mohamed");
+        setField(doctors[1].doctor_speciality, "Neurology");
+        setField(doctors[1].address, "Giza");
+
+        setField(doctors[2].doctor_id, "D003");
+        setField(doctors[2].doctor_name, "Omar Hassan");
+        setField(doctors[2].doctor_speciality, "Pediatrics");
+        setField(doctors[2].address, "Cairo");
+
+        setField(doctors[3].doctor_id, "D004");
+        setField(doctors[3].doctor_name, "Mona Adel");
+        setField(doctors[3].doctor_speciality, "Dermatology");
+        setField(doctors[3].address, "Alexandria");
+
+        setField(doctors[4].doctor_id, "D005");
+        setField(doctors[4].doctor_name, "Youssef Samir");
+        setField(doctors[4].doctor_speciality, "Surgery");
+        setField(doctors[4].address, "Giza");
+
+        for (int i = 0; i < 5; i++)
+        {
+            Add_doctor(doctors[i]);
+        }
+
+        cout << "5 Doctors inserted successfully.\n";
+
+        // =====================================
+        //        REBUILD DOCTOR INDEXES
+        // =====================================
+
+        buildDoctorPrimaryIndex();
+        buildDoctorNameIndex();
+        buildDoctorSpeciality();
     }
-
-    cout << "5 Doctors inserted successfully.\n";
-
-    // =====================================
-    //        REBUILD DOCTOR INDEXES
-    // =====================================
-
-    buildDoctorPrimaryIndex();
-    buildDoctorNameIndex();
-    buildDoctorSpeciality();
-
     // =====================================
     //        INITIAL APPOINTMENTS
     // =====================================
-
-    Appointment appointments[10]{};
-
-    setField(appointments[0].appointment_id, "A001");
-    setField(appointments[0].appointment_date, "2026-11-10");
-    setField(appointments[0].doctor_id, "D001");
-
-    setField(appointments[1].appointment_id, "A002");
-    setField(appointments[1].appointment_date, "2026-11-11");
-    setField(appointments[1].doctor_id, "D002");
-
-    setField(appointments[2].appointment_id, "A003");
-    setField(appointments[2].appointment_date, "2026-11-12");
-    setField(appointments[2].doctor_id, "D001");
-
-    setField(appointments[3].appointment_id, "A004");
-    setField(appointments[3].appointment_date, "2026-11-13");
-    setField(appointments[3].doctor_id, "D003");
-
-    setField(appointments[4].appointment_id, "A005");
-    setField(appointments[4].appointment_date, "2026-11-14");
-    setField(appointments[4].doctor_id, "D004");
-
-    setField(appointments[5].appointment_id, "A006");
-    setField(appointments[5].appointment_date, "2026-11-15");
-    setField(appointments[5].doctor_id, "D005");
-
-    setField(appointments[6].appointment_id, "A007");
-    setField(appointments[6].appointment_date, "2026-11-16");
-    setField(appointments[6].doctor_id, "D002");
-
-    setField(appointments[7].appointment_id, "A008");
-    setField(appointments[7].appointment_date, "2026-11-17");
-    setField(appointments[7].doctor_id, "D003");
-
-    setField(appointments[8].appointment_id, "A009");
-    setField(appointments[8].appointment_date, "2026-11-18");
-    setField(appointments[8].doctor_id, "D001");
-
-    setField(appointments[9].appointment_id, "A010");
-    setField(appointments[9].appointment_date, "2026-11-19");
-    setField(appointments[9].doctor_id, "D005");
-
-    for (int i = 0; i < 10; i++)
+    if (appointmentsEmpty)
     {
-        Add_appointment(appointments[i]);
+        Appointment appointments[10]{};
+
+        setField(appointments[0].appointment_id, "A001");
+        setField(appointments[0].appointment_date, "2026-11-10");
+        setField(appointments[0].doctor_id, "D001");
+
+        setField(appointments[1].appointment_id, "A002");
+        setField(appointments[1].appointment_date, "2026-11-11");
+        setField(appointments[1].doctor_id, "D002");
+
+        setField(appointments[2].appointment_id, "A003");
+        setField(appointments[2].appointment_date, "2026-11-12");
+        setField(appointments[2].doctor_id, "D001");
+
+        setField(appointments[3].appointment_id, "A004");
+        setField(appointments[3].appointment_date, "2026-11-13");
+        setField(appointments[3].doctor_id, "D003");
+
+        setField(appointments[4].appointment_id, "A005");
+        setField(appointments[4].appointment_date, "2026-11-14");
+        setField(appointments[4].doctor_id, "D004");
+
+        setField(appointments[5].appointment_id, "A006");
+        setField(appointments[5].appointment_date, "2026-11-15");
+        setField(appointments[5].doctor_id, "D005");
+
+        setField(appointments[6].appointment_id, "A007");
+        setField(appointments[6].appointment_date, "2026-11-16");
+        setField(appointments[6].doctor_id, "D002");
+
+        setField(appointments[7].appointment_id, "A008");
+        setField(appointments[7].appointment_date, "2026-11-17");
+        setField(appointments[7].doctor_id, "D003");
+
+        setField(appointments[8].appointment_id, "A009");
+        setField(appointments[8].appointment_date, "2026-11-18");
+        setField(appointments[8].doctor_id, "D001");
+
+        setField(appointments[9].appointment_id, "A010");
+        setField(appointments[9].appointment_date, "2026-11-19");
+        setField(appointments[9].doctor_id, "D005");
+
+        for (int i = 0; i < 10; i++)
+        {
+            Add_appointment(appointments[i]);
+        }
+
+        cout << "10 Appointments inserted successfully.\n";
     }
-
-    cout << "10 Appointments inserted successfully.\n";
-
     // =====================================
     //          REBUILD ALL INDEXES
     // =====================================
@@ -434,9 +438,9 @@ int main()
 }
 
 //=====Qureries========
-//select all from doctors where doctor name ='Youssef Samir' and doctor specialty='Surgery'
-//select doctor name from doctors where doctor name ='Mona Adel'
-//select all from doctors where doctor id='D001'
-//Select all from Appointments where Doctor ID='D001'
-//select all from doctors where doctor specialty='Surgery'
-//select all from doctors where doctor name ='Youssef Samir' or doctor specialty='Pediatrics'
+// select all from doctors where doctor name ='Youssef Samir' and doctor specialty='Surgery'
+// select doctor name from doctors where doctor name ='Mona Adel'
+// select all from doctors where doctor id='D001'
+// Select all from Appointments where Doctor ID='D001'
+// select all from doctors where doctor specialty='Surgery'
+// select all from doctors where doctor name ='Youssef Samir' or doctor specialty='Pediatrics'
